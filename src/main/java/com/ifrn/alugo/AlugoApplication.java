@@ -1,13 +1,13 @@
-package com.ifrn.domusmanager;
+package com.ifrn.alugo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class DomusManagerApplication {
+public class AlugoApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(DomusManagerApplication.class, args);
+        SpringApplication.run(AlugoApplication.class, args);
     }
 
 }

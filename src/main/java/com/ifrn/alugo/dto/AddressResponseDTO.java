@@ -1,0 +1,14 @@
+package com.ifrn.domusmanager.dto;
+
+import lombok.Data;
+
+@Data
+public class AddressResponseDTO {
+    private Long id;
+    private String city;
+    private String state;
+    private Long zipCode;
+    private String street;
+    private String neighborhood;
+    private Integer number;
+}

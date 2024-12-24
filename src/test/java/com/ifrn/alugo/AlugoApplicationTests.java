@@ -1,4 +1,4 @@
-package com.ifrn.domusmanager;
+package com.ifrn.alugo;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
