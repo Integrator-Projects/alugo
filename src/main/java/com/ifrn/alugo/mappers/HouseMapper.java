@@ -1,16 +1,25 @@
-package com.ifrn.domusmanager.mappers;
+package com.ifrn.alugo.mappers;
 
-import com.ifrn.domusmanager.dto.HouseRequestDTO;
-import com.ifrn.domusmanager.dto.HouseResponseDTO;
-import com.ifrn.domusmanager.entity.House;
+import com.ifrn.alugo.dto.HouseRequestDTO;
+import com.ifrn.alugo.dto.HouseResponseDTO;
+import com.ifrn.alugo.entity.House;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring", uses = AddressMapper.class)
 public interface HouseMapper {
-    House toEntityFromRequest(HouseRequestDTO houseRequestDTO);
+    @Mapping(target = "id", ignore = true)
+    House toEntity(HouseRequestDTO houseRequestDTO);
+
     HouseResponseDTO toResponseDTO(House house);
 
-    @Mapping(target = "id", ignore = true)
-    void updateEntityFromRequest(HouseRequestDTO houseRequestDTO, House house);
+    @Mapping(source = "houseRequestDTO.rentalPrice", target = "rentalPrice")
+    @Mapping(source = "houseRequestDTO.description", target = "description")
+    @Mapping(source = "houseRequestDTO.available", target = "available")
+    @Mapping(source = "houseRequestDTO.numberOfBathrooms", target = "numberOfBathrooms")
+    @Mapping(source = "houseRequestDTO.numberOfBedrooms", target = "numberOfBedrooms")
+    @Mapping(source = "houseRequestDTO.areaInM2", target = "areaInM2")
+    @Mapping(source = "houseRequestDTO.hasGarage", target = "hasGarage")
+    @Mapping(source = "houseRequestDTO.address", target = "address")
+    House updateEntityFromRequest(HouseRequestDTO houseRequestDTO, House house);
 }

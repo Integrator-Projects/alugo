@@ -1,4 +1,4 @@
-package com.ifrn.domusmanager.dto;
+package com.ifrn.alugo.dto;
 
 import lombok.Data;
 
