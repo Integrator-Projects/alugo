@@ -1,4 +1,4 @@
-package com.ifrn.domusmanager.dto;
+package com.ifrn.alugo.dto;
 
 import lombok.Data;
 
@@ -6,7 +6,7 @@ import lombok.Data;
 public class AddressRequestDTO {
     private String city;
     private String state;
-    private Long zipCode;
+    private String zipCode;
     private String street;
     private String neighborhood;
     private Integer number;

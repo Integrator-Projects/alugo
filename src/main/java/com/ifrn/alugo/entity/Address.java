@@ -1,4 +1,4 @@
-package com.ifrn.domusmanager.entity;
+package com.ifrn.alugo.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -13,7 +13,7 @@ public class Address {
 
     private String city;
     private String state;
-    private Long zipCode;
+    private String zipCode;
     private String street;
     private String neighborhood;
     private Integer number;
