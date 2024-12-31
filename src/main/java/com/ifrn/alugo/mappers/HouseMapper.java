@@ -5,6 +5,7 @@ import com.ifrn.alugo.dto.HouseResponseDTO;
 import com.ifrn.alugo.entity.House;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring", uses = AddressMapper.class)
 public interface HouseMapper {
@@ -21,5 +22,6 @@ public interface HouseMapper {
     @Mapping(source = "houseRequestDTO.areaInM2", target = "areaInM2")
     @Mapping(source = "houseRequestDTO.hasGarage", target = "hasGarage")
     @Mapping(source = "houseRequestDTO.address", target = "address")
-    House updateEntityFromRequest(HouseRequestDTO houseRequestDTO, House house);
+    @Mapping(target = "id", ignore = true)
+    House updateEntityFromRequest(HouseRequestDTO houseRequestDTO, @MappingTarget House house);
 }

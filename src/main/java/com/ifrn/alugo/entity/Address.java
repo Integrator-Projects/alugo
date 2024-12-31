@@ -17,10 +17,4 @@ public class Address {
     private String street;
     private String neighborhood;
     private Integer number;
-
-    @OneToOne(mappedBy = "address")
-    private House house;
-
-    @OneToOne(mappedBy = "address")
-    private Building building;
 }
