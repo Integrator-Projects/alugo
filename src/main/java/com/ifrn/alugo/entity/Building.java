@@ -1,4 +1,4 @@
-package com.ifrn.domusmanager.entity;
+package com.ifrn.alugo.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -11,7 +11,10 @@ public class Building {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "number_of_floors")
     private Integer numberOfFloors;
+
+    @Column(name = "description")
     private String description;
 
     @OneToOne(cascade = CascadeType.ALL)
