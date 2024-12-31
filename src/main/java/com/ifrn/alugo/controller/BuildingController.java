@@ -2,7 +2,6 @@ package com.ifrn.alugo.controller;
 
 import com.ifrn.alugo.dto.BuildingRequestDTO;
 import com.ifrn.alugo.dto.BuildingResponseDTO;
-import com.ifrn.alugo.entity.Building;
 import com.ifrn.alugo.service.BuildingService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
