@@ -9,6 +9,7 @@ import org.mapstruct.*;
 public interface BuildingMapper {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "apartments", ignore = true)
     Building toEntity(BuildingRequestDTO buildingRequestDTO);
 
     BuildingResponseDTO toResponseDTO(Building building);
@@ -17,5 +18,6 @@ public interface BuildingMapper {
     @Mapping(source = "buildingRequestDTO.description", target = "description")
     @Mapping(source = "buildingRequestDTO.address", target = "address")
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "apartments", ignore = true)
     Building updateEntityFromRequest(BuildingRequestDTO buildingRequestDTO, @MappingTarget Building building);
 }
