@@ -9,6 +9,7 @@ import com.ifrn.alugo.mappers.AddressMapper;
 import com.ifrn.alugo.mappers.HouseMapper;
 import com.ifrn.alugo.repository.AddressRepository;
 import com.ifrn.alugo.repository.HouseRepository;
+import com.ifrn.alugo.testData.TestDataFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -55,12 +56,10 @@ class HouseServiceTest {
     @Test
     @DisplayName("Não permite criar uma casa com endereço existente")
     public void testCreateHouse_WithExistingAddress_ShouldThrowIllegalArgumentException() {
-        HouseRequestDTO houseRequestDTO = new HouseRequestDTO();
-        AddressRequestDTO addressRequestDTO = new AddressRequestDTO("City", "State", "12345", "Street", "Neighborhood", 123);
-        houseRequestDTO.setAddress(addressRequestDTO);
-
-        Address address = new Address(1L, "City", "State", "12345", "Street", "Neighborhood", 123);
-        House existingHouse = new House();
+        AddressRequestDTO addressRequestDTO = TestDataFactory.createAddressRequestDTO();
+        Address address = TestDataFactory.createAddressEntity();
+        HouseRequestDTO houseRequestDTO = TestDataFactory.createHouseRequestDTO(addressRequestDTO);
+        House existingHouse =TestDataFactory.createHouseEntity();
         existingHouse.setAddress(address);
 
         when(addressMapper.toEntity(any(AddressRequestDTO.class))).thenReturn(address);
@@ -78,12 +77,10 @@ class HouseServiceTest {
     @Test
     @DisplayName("Cria uma casa com endereço novo")
     public void testCreateHouse_WithNonExistingAddress_ShouldCreateHouseSuccessfully(){
-        HouseRequestDTO houseRequestDTO = new HouseRequestDTO();
-        AddressRequestDTO addressRequestDTO = new AddressRequestDTO("City", "State", "12345", "Street", "Neighborhood", 123);
-        houseRequestDTO.setAddress(addressRequestDTO);
-
-        Address address = new Address(1L,"City", "State", "12345", "Street", "Neighborhood", 123);
-        House house = new House();
+        AddressRequestDTO addressRequestDTO = TestDataFactory.createAddressRequestDTO();
+        HouseRequestDTO houseRequestDTO = TestDataFactory.createHouseRequestDTO(addressRequestDTO);
+        House house = TestDataFactory.createHouseEntity();
+        Address address = TestDataFactory.createAddressEntity();
 
         when(addressMapper.toEntity(any(AddressRequestDTO.class))).thenReturn(address);
         when(houseRepository.findByAddress(address)).thenReturn(Optional.empty());
