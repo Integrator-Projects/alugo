@@ -1,10 +1,12 @@
 package com.ifrn.alugo.service;
 
 import com.ifrn.alugo.dto.AddressRequestDTO;
+import com.ifrn.alugo.dto.AddressResponseDTO;
 import com.ifrn.alugo.dto.HouseRequestDTO;
 import com.ifrn.alugo.dto.HouseResponseDTO;
 import com.ifrn.alugo.entity.Address;
 import com.ifrn.alugo.entity.House;
+import com.ifrn.alugo.exceptions.ResourceNotFoundException;
 import com.ifrn.alugo.mappers.AddressMapper;
 import com.ifrn.alugo.mappers.HouseMapper;
 import com.ifrn.alugo.repository.AddressRepository;
@@ -18,6 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -92,4 +95,147 @@ class HouseServiceTest {
         assertNotNull(response);
         verify(houseRepository).save(any(House.class));
     }
+
+    @Test
+    @DisplayName("Listar todas as casas com sucesso")
+    public void listAllHouses_ShouldReturnListOfHouses() {
+        House house1 = TestDataFactory.createHouseEntity();
+        House house2 = TestDataFactory.createHouseEntity();
+        List<House> houses = List.of(house1, house2);
+
+        when(houseRepository.findAll()).thenReturn(houses);
+        when(houseMapper.toResponseDTO(house1)).thenReturn(new HouseResponseDTO());
+        when(houseMapper.toResponseDTO(house2)).thenReturn(new HouseResponseDTO());
+
+        List<HouseResponseDTO> response = houseService.getAllHouses();
+
+        assertEquals(2, response.size());
+        verify(houseRepository).findAll();
+    }
+
+    @Test
+    @DisplayName("Buscar uma casa com ID válido")
+    public void findHouseById_WithValidId_ShouldReturnHouse() {
+        House house1 = TestDataFactory.createHouseEntity();
+        Long validId = 1L;
+
+        when(houseRepository.findById(validId)).thenReturn(Optional.of(house1));
+
+        HouseResponseDTO houseResponseDTO = houseService.findHouseById(validId);
+        assertNotNull(houseResponseDTO);
+        verify(houseRepository).findById(validId);
+    }
+
+    @Test
+    @DisplayName("Buscar uma casa com ID inválido")
+    public void findHouseById_WithInvalidId_ShouldThrowException() {
+        Long invalidId = 9999L;
+        when(houseRepository.findById(invalidId)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> houseService.findHouseById(invalidId));
+
+        verify(houseRepository).findById(invalidId);
+    }
+
+    @Test
+    @DisplayName("Tentar atualizar casa com endereço já cadastrado")
+    public void updateHouse_WithExistingAddress_ShouldThrowException() {
+        Long houseId = 1L;
+        Address existingAddress = TestDataFactory.createAddress(1L, "City", "State", "12345", "Street", "Neighborhood", 123);
+        House existingHouse = TestDataFactory.createHouse(
+                2L,
+                1500.0,
+                "Beautiful house",
+                true,
+                2,
+                3,
+                120.0,
+                true,
+                existingAddress
+        );
+        AddressRequestDTO addressRequestDTO = TestDataFactory.createAddressRequestDTO();
+        HouseRequestDTO houseRequestDTO = TestDataFactory.createHouseRequestDTO(addressRequestDTO);
+
+        when(addressMapper.toEntity(houseRequestDTO.getAddress())).thenReturn(existingAddress);
+        when(houseRepository.findByAddress(existingAddress)).thenReturn(Optional.of(existingHouse));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> houseService.updateHouse(houseId, houseRequestDTO));
+
+        verify(houseRepository, never()).save(any(House.class));
+    }
+
+    @Test
+    @DisplayName("Atualizar casa com todos os campos válidos")
+    void updateHouse_WithValidFields_ShouldUpdateHouseSuccessfully() {
+        Long houseId = 1L;
+        AddressRequestDTO addressRequestDTO = TestDataFactory.createAddressRequestDTO();
+        HouseRequestDTO houseRequestDTO = TestDataFactory.createHouseRequestDTO(addressRequestDTO);
+
+        House house = TestDataFactory.createHouseEntity();
+        house.setId(houseId);
+        house.setAddress(TestDataFactory.createAddressEntity());
+
+        when(houseRepository.findById(houseId)).thenReturn(Optional.of(house));
+        when(houseRepository.findByAddress(any(Address.class))).thenReturn(Optional.empty());
+        when(houseMapper.updateEntityFromRequest(houseRequestDTO, house)).thenReturn(house);
+        when(houseRepository.save(house)).thenReturn(house);
+
+        HouseResponseDTO houseResponseDTO = houseService.updateHouse(houseId, houseRequestDTO);
+
+        assertNotNull(houseResponseDTO);
+        verify(houseRepository).save(house);
+    }
+
+    @Test
+    @DisplayName("Tentar atualizar casa com id que não existe")
+    public void updateHouse_WithInvalidId_ShouldThrowException() {
+        Long houseId = 9999L;
+        AddressRequestDTO addressRequestDTO = TestDataFactory.createAddressRequestDTO();
+        HouseRequestDTO houseRequestDTO = TestDataFactory.createHouseRequestDTO(addressRequestDTO);
+
+        House house = TestDataFactory.createHouseEntity();
+        house.setAddress(TestDataFactory.createAddressEntity());
+
+        when(houseRepository.findById(houseId)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> houseService.updateHouse(houseId, houseRequestDTO)
+        );
+
+        verify(houseRepository).findById(houseId);
+        verify(houseRepository, never()).save(any(House.class));
+    }
+
+    @Test
+    @DisplayName("Excluir casa com ID válido")
+    public void deleteHouseById_WithValidId_ShouldDeleteHouseSuccessfully() {
+        Long houseId = 1L;
+
+        when(houseRepository.findById(houseId)).thenReturn(Optional.of(TestDataFactory.createHouseEntity()));
+        when(houseRepository.existsById(houseId)).thenReturn(true);
+
+        houseService.deleteHouse(houseId);
+
+        verify(houseRepository).deleteById(houseId);
+    }
+
+    @Test
+    @DisplayName("Tentar excluir casa com ID inválido")
+    public void deleteHouseById_WithValidId_ShouldThrowException() {
+        Long houseId = 9999L;
+
+        when(houseRepository.findById(houseId)).thenReturn(Optional.empty());
+        when(houseRepository.existsById(houseId)).thenReturn(false);
+
+        houseService.deleteHouse(houseId);
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> houseService.deleteHouse(houseId)
+        );
+
+        verify(houseRepository, never()).deleteById(houseId);
+    }
+
 }
