@@ -19,6 +19,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -103,14 +107,17 @@ class HouseServiceTest {
         House house2 = TestDataFactory.createHouseEntity();
         List<House> houses = List.of(house1, house2);
 
-        when(houseRepository.findAll()).thenReturn(houses);
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<House> page = new PageImpl<>(houses, pageable, houses.size());
+
+        when(houseRepository.findAll(pageable)).thenReturn(page);
         when(houseMapper.toResponseDTO(house1)).thenReturn(new HouseResponseDTO());
         when(houseMapper.toResponseDTO(house2)).thenReturn(new HouseResponseDTO());
 
-        List<HouseResponseDTO> response = houseService.getAllHouses();
+        Page<HouseResponseDTO> response = houseService.getAllHouses(pageable);
 
-        assertEquals(2, response.size());
-        verify(houseRepository).findAll();
+        assertEquals(2, response.getContent().size());
+        verify(houseRepository).findAll(pageable);
     }
 
     @Test

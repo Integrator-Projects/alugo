@@ -3,6 +3,10 @@ package com.ifrn.alugo.controller;
 import com.ifrn.alugo.dto.HouseRequestDTO;
 import com.ifrn.alugo.dto.HouseResponseDTO;
 import com.ifrn.alugo.service.HouseService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,8 +29,11 @@ public class HouseController {
     }
 
     @GetMapping
-    public ResponseEntity<List<HouseResponseDTO>> getAllHouses() {
-        return ResponseEntity.ok(houseService.getAllHouses());
+    public ResponseEntity<Page<HouseResponseDTO>> getAllHouses(
+            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC)
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(houseService.getAllHouses(pageable));
     }
 
     @GetMapping("/{id}")

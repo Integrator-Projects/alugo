@@ -8,13 +8,12 @@ import com.ifrn.alugo.entity.House;
 import com.ifrn.alugo.exceptions.ResourceNotFoundException;
 import com.ifrn.alugo.mappers.AddressMapper;
 import com.ifrn.alugo.mappers.HouseMapper;
-import com.ifrn.alugo.repository.AddressRepository;
 import com.ifrn.alugo.repository.HouseRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class HouseService {
@@ -45,11 +44,9 @@ public class HouseService {
         return houseMapper.toResponseDTO(house);
     }
 
-    public List<HouseResponseDTO> getAllHouses() {
-        return houseRepository.findAll()
-                .stream()
-                .map(houseMapper::toResponseDTO)
-                .collect(Collectors.toList());
+    public Page<HouseResponseDTO> getAllHouses(Pageable pageable) {
+        return houseRepository.findAll(pageable)
+                .map(houseMapper::toResponseDTO);
     }
 
     public HouseResponseDTO findHouseById(Long id) {
