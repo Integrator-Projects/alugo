@@ -1,8 +1,16 @@
 services:
   api:
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: alugo
     ports:
       - "8080:8080"
+    volumes:
+      - ./target:/app/target # For live reloading
+      - ./src:/app/src # For live reloading
+      - ./pom.xml:/app/pom.xml # For efficient build
+      - mvn-cache:/root/.m2
     depends_on:
       - db
     environment:
@@ -20,3 +28,6 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
     ports:
       - '5432'
+
+volumes:
+  mvn-cache:
