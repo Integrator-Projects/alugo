@@ -9,6 +9,8 @@ import com.ifrn.alugo.mappers.AddressMapper;
 import com.ifrn.alugo.mappers.BuildingMapper;
 import com.ifrn.alugo.mappers.HouseMapper;
 import com.ifrn.alugo.repository.BuildingRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,11 +32,8 @@ public class BuildingService {
         return buildingMapper.toResponseDTO(buildingRepository.save(building));
     }
 
-    public List<BuildingResponseDTO> getAllBuildings() {
-        return buildingRepository.findAll()
-                .stream()
-                .map(buildingMapper::toResponseDTO)
-                .collect(Collectors.toList());
+    public Page<BuildingResponseDTO> getAllBuildings(Pageable pageable) {
+        return buildingRepository.findAll(pageable).map(buildingMapper::toResponseDTO);
     }
 
     public BuildingResponseDTO getBuildingById(Long id) {

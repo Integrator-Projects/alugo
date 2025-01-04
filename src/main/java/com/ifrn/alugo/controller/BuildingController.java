@@ -3,6 +3,8 @@ package com.ifrn.alugo.controller;
 import com.ifrn.alugo.dto.BuildingRequestDTO;
 import com.ifrn.alugo.dto.BuildingResponseDTO;
 import com.ifrn.alugo.service.BuildingService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,8 +27,8 @@ public class BuildingController {
     }
 
     @GetMapping
-    public ResponseEntity<List<BuildingResponseDTO>> getAllBuildings() {
-        return ResponseEntity.status(HttpStatus.OK).body(buildingService.getAllBuildings());
+    public ResponseEntity<Page<BuildingResponseDTO>> getAllBuildings(Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK).body(buildingService.getAllBuildings(pageable));
     }
 
     @GetMapping("/{id}")
