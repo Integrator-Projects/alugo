@@ -8,6 +8,8 @@ import com.ifrn.alugo.exceptions.ResourceNotFoundException;
 import com.ifrn.alugo.mappers.ApartmentMapper;
 import com.ifrn.alugo.repository.ApartmentRepository;
 import com.ifrn.alugo.repository.BuildingRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,11 +37,8 @@ public class ApartmentService {
         return apartmentMapper.toResponseDTO(apartmentRepository.save(apartment));
     }
 
-    public List<ApartmentResponseDTO> getAllApartments() {
-        return apartmentRepository.findAll()
-                .stream()
-                .map(apartmentMapper::toResponseDTO)
-                .collect(Collectors.toList());
+    public Page<ApartmentResponseDTO> getAllApartments(Pageable pageable) {
+        return apartmentRepository.findAll(pageable).map(apartmentMapper::toResponseDTO);
     }
 
     public ApartmentResponseDTO getApartmentById(Long id) {
