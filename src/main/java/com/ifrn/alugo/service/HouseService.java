@@ -32,7 +32,9 @@ public class HouseService {
         AddressRequestDTO addressRequestDTO = houseRequestDTO.getAddress();
         Address address = addressMapper.toEntity(addressRequestDTO);
 
-        Optional<House> existingHouse = houseRepository.findByAddress(address);
+        Optional<House> existingHouse = houseRepository.findByAddressStreetAndAddressCityAndAddressZipCode(
+                address.getStreet(), address.getCity(), address.getZipCode()
+        );
 
         if (existingHouse.isPresent()) {
             throw new IllegalArgumentException("The address is already assigned to another house.");
