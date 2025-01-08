@@ -1,9 +1,13 @@
 package com.ifrn.alugo.dto;
 
 import com.ifrn.alugo.entity.Building;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ApartmentRequestDTO {
     private Integer number;
     private Integer floor;
