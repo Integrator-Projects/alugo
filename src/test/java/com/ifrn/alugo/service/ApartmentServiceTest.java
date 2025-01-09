@@ -4,6 +4,7 @@ import com.ifrn.alugo.dto.ApartmentRequestDTO;
 import com.ifrn.alugo.dto.ApartmentResponseDTO;
 import com.ifrn.alugo.entity.Apartment;
 import com.ifrn.alugo.entity.Building;
+import com.ifrn.alugo.exceptions.ResourceNotFoundException;
 import com.ifrn.alugo.mappers.ApartmentMapper;
 import com.ifrn.alugo.repository.ApartmentRepository;
 import com.ifrn.alugo.repository.BuildingRepository;
@@ -21,8 +22,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 class ApartmentServiceTest {
 
@@ -90,4 +91,35 @@ class ApartmentServiceTest {
         assertEquals(2, result.getContent().size());
     }
 
+    @Test
+    @DisplayName("Buscar apartamento com id válido")
+    public void testFindApartmentById_ShouldReturnApartmentSuccessfully() {
+        Apartment apartment1 = Instancio.create(Apartment.class);
+        ApartmentResponseDTO apartmentResponseDTO = Instancio.create(ApartmentResponseDTO.class);
+
+        when(apartmentRepository.findById(1L)).thenReturn(Optional.of(apartment1));
+        when(apartmentMapper.toResponseDTO(apartment1)).thenReturn(apartmentResponseDTO);
+
+        ApartmentResponseDTO result = apartmentService.getApartmentById(1L);
+
+        assertEquals(apartmentResponseDTO, result);
+        verify(apartmentRepository).findById(1L);
+    }
+
+    @Test
+    @DisplayName("Buscar apartamento com id inválido")
+    public void testFindApartmentById_ShouldThrowException() {
+        long invalidId = 9999L;
+        Apartment apartment1 = Instancio.create(Apartment.class);
+
+        when(apartmentRepository.findById(invalidId)).thenReturn(Optional.empty());
+
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> apartmentService.getApartmentById(invalidId)
+        );
+
+        verify(apartmentMapper, never()).toResponseDTO(apartment1);
+        verify(apartmentRepository.findById(invalidId));
+    }
 }
