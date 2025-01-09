@@ -154,4 +154,30 @@ class ApartmentServiceTest {
         verify(apartmentRepository, never()).findById(1L);
         verify(apartmentRepository, never()).save(any(Apartment.class));
     }
+
+    @Test
+    @DisplayName("Deletar apartamento com id válido")
+    public void testDeleteApartmentById_ShouldDeleteApartmentSuccessfully() {
+        when(apartmentRepository.existsById(1L)).thenReturn(true);
+
+        apartmentService.deleteApartment(1L);
+
+        verify(apartmentRepository).deleteById(1L);
+    }
+
+    @Test
+    @DisplayName("Deletar apartamento com id inválido")
+    public void testDeleteApartment_WithInvalidId_ShouldThrowException() {
+        long invalidId = 9999L;
+        when(apartmentRepository.existsById(invalidId)).thenReturn(false);
+
+        apartmentService.deleteApartment(invalidId);
+
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> apartmentService.deleteApartment(invalidId)
+        );
+
+        verify(apartmentRepository, never()).deleteById(invalidId);
+    }
 }
