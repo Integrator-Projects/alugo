@@ -59,6 +59,15 @@ public class HouseService {
         House house = houseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("House with id " + id + " not found"));
 
+        Address address = addressMapper.toEntity(houseRequestDTO.getAddress());
+        Optional<House> existingHouse = houseRepository.findByAddressStreetAndAddressCityAndAddressZipCode(
+          address.getStreet(), address.getCity(), address.getZipCode()
+        );
+
+        if (existingHouse.isPresent()) {
+            throw new IllegalArgumentException("The address is already assigned to another house.");
+        }
+
         house = houseMapper.updateEntityFromRequest(houseRequestDTO, house);
         return houseMapper.toResponseDTO(houseRepository.saveAndFlush(house));
     }
