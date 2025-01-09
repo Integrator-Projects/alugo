@@ -1,7 +1,6 @@
 package com.ifrn.alugo.service;
 
 import com.ifrn.alugo.dto.AddressRequestDTO;
-import com.ifrn.alugo.dto.AddressResponseDTO;
 import com.ifrn.alugo.dto.HouseRequestDTO;
 import com.ifrn.alugo.dto.HouseResponseDTO;
 import com.ifrn.alugo.entity.Address;
@@ -11,7 +10,7 @@ import com.ifrn.alugo.mappers.AddressMapper;
 import com.ifrn.alugo.mappers.HouseMapper;
 import com.ifrn.alugo.repository.AddressRepository;
 import com.ifrn.alugo.repository.HouseRepository;
-import com.ifrn.alugo.testData.TestDataFactory;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -63,14 +62,16 @@ class HouseServiceTest {
     @Test
     @DisplayName("Não permite criar uma casa com endereço existente")
     public void testCreateHouse_WithExistingAddress_ShouldThrowIllegalArgumentException() {
-        AddressRequestDTO addressRequestDTO = TestDataFactory.createAddressRequestDTO();
-        Address address = TestDataFactory.createAddressEntity();
-        HouseRequestDTO houseRequestDTO = TestDataFactory.createHouseRequestDTO(addressRequestDTO);
-        House existingHouse =TestDataFactory.createHouseEntity();
+        AddressRequestDTO addressRequestDTO = Instancio.create(AddressRequestDTO.class);
+        Address address = Instancio.create(Address.class);
+        HouseRequestDTO houseRequestDTO = Instancio.create(HouseRequestDTO.class);
+        House existingHouse = Instancio.create(House.class);
         existingHouse.setAddress(address);
 
         when(addressMapper.toEntity(any(AddressRequestDTO.class))).thenReturn(address);
-        when(houseRepository.findByAddress(address)).thenReturn(Optional.of(existingHouse));
+        when(houseRepository.findByAddressStreetAndAddressCityAndAddressZipCode(
+                address.getStreet(), address.getCity(), address.getZipCode()
+        )).thenReturn(Optional.of(existingHouse));
 
         assertThrows(IllegalArgumentException.class, () -> {
             houseService.createHouse(houseRequestDTO);
@@ -84,13 +85,15 @@ class HouseServiceTest {
     @Test
     @DisplayName("Cria uma casa com endereço novo")
     public void testCreateHouse_WithNonExistingAddress_ShouldCreateHouseSuccessfully(){
-        AddressRequestDTO addressRequestDTO = TestDataFactory.createAddressRequestDTO();
-        HouseRequestDTO houseRequestDTO = TestDataFactory.createHouseRequestDTO(addressRequestDTO);
-        House house = TestDataFactory.createHouseEntity();
-        Address address = TestDataFactory.createAddressEntity();
+        AddressRequestDTO addressRequestDTO = Instancio.create(AddressRequestDTO.class);
+        HouseRequestDTO houseRequestDTO = Instancio.create(HouseRequestDTO.class);
+        House house = Instancio.create(House.class);
+        Address address = Instancio.create(Address.class);
 
         when(addressMapper.toEntity(any(AddressRequestDTO.class))).thenReturn(address);
-        when(houseRepository.findByAddress(address)).thenReturn(Optional.empty());
+        when(houseRepository.findByAddressStreetAndAddressCityAndAddressZipCode(
+                address.getStreet(), address.getCity(), address.getZipCode()
+        )).thenReturn(Optional.empty());
         when(houseMapper.toEntity(any(HouseRequestDTO.class))).thenReturn(house);
         when(houseMapper.toResponseDTO(any(House.class))).thenReturn(new HouseResponseDTO());
 
@@ -103,8 +106,8 @@ class HouseServiceTest {
     @Test
     @DisplayName("Listar todas as casas com sucesso")
     public void listAllHouses_ShouldReturnListOfHouses() {
-        House house1 = TestDataFactory.createHouseEntity();
-        House house2 = TestDataFactory.createHouseEntity();
+        House house1 = Instancio.create(House.class);
+        House house2 = Instancio.create(House.class);
         List<House> houses = List.of(house1, house2);
 
         Pageable pageable = PageRequest.of(0, 10);
@@ -123,13 +126,16 @@ class HouseServiceTest {
     @Test
     @DisplayName("Buscar uma casa com ID válido")
     public void findHouseById_WithValidId_ShouldReturnHouse() {
-        House house1 = TestDataFactory.createHouseEntity();
+        House house1 = Instancio.create(House.class);
+        HouseResponseDTO houseResponseDTO = Instancio.create(HouseResponseDTO.class);
         Long validId = 1L;
 
         when(houseRepository.findById(validId)).thenReturn(Optional.of(house1));
+        when(houseMapper.toResponseDTO(house1)).thenReturn(houseResponseDTO);
 
-        HouseResponseDTO houseResponseDTO = houseService.findHouseById(validId);
-        assertNotNull(houseResponseDTO);
+        HouseResponseDTO result = houseService.findHouseById(validId);
+
+        assertEquals(houseResponseDTO, result);
         verify(houseRepository).findById(validId);
     }
 
@@ -149,61 +155,59 @@ class HouseServiceTest {
     @DisplayName("Tentar atualizar casa com endereço já cadastrado")
     public void updateHouse_WithExistingAddress_ShouldThrowException() {
         Long houseId = 1L;
-        Address existingAddress = TestDataFactory.createAddress(1L, "City", "State", "12345", "Street", "Neighborhood", 123);
-        House existingHouse = TestDataFactory.createHouse(
-                2L,
-                1500.0,
-                "Beautiful house",
-                true,
-                2,
-                3,
-                120.0,
-                true,
-                existingAddress
-        );
-        AddressRequestDTO addressRequestDTO = TestDataFactory.createAddressRequestDTO();
-        HouseRequestDTO houseRequestDTO = TestDataFactory.createHouseRequestDTO(addressRequestDTO);
+        Address existingAddress = Instancio.create(Address.class);
+        House existingHouse = Instancio.create(House.class);
 
+        AddressRequestDTO addressRequestDTO = Instancio.create(AddressRequestDTO.class);
+        HouseRequestDTO houseRequestDTO = Instancio.create(HouseRequestDTO.class);
+
+        when(houseRepository.findById(houseId)).thenReturn(Optional.of(existingHouse));
         when(addressMapper.toEntity(houseRequestDTO.getAddress())).thenReturn(existingAddress);
-        when(houseRepository.findByAddress(existingAddress)).thenReturn(Optional.of(existingHouse));
+        when(houseRepository.findByAddressStreetAndAddressCityAndAddressZipCode(
+                existingAddress.getStreet(), existingAddress.getCity(), existingAddress.getZipCode()
+        )).thenReturn(Optional.of(existingHouse));
 
         assertThrows(IllegalArgumentException.class,
                 () -> houseService.updateHouse(houseId, houseRequestDTO));
 
-        verify(houseRepository, never()).save(any(House.class));
+        verify(houseRepository, never()).saveAndFlush(any(House.class));
     }
 
     @Test
     @DisplayName("Atualizar casa com todos os campos válidos")
     void updateHouse_WithValidFields_ShouldUpdateHouseSuccessfully() {
         Long houseId = 1L;
-        AddressRequestDTO addressRequestDTO = TestDataFactory.createAddressRequestDTO();
-        HouseRequestDTO houseRequestDTO = TestDataFactory.createHouseRequestDTO(addressRequestDTO);
+        HouseRequestDTO houseRequestDTO = Instancio.create(HouseRequestDTO.class);
+        Address address = Instancio.create(Address.class);
 
-        House house = TestDataFactory.createHouseEntity();
+        House house = Instancio.create(House.class);
         house.setId(houseId);
-        house.setAddress(TestDataFactory.createAddressEntity());
+        house.setAddress(address);
 
         when(houseRepository.findById(houseId)).thenReturn(Optional.of(house));
-        when(houseRepository.findByAddress(any(Address.class))).thenReturn(Optional.empty());
+        when(addressMapper.toEntity(any(AddressRequestDTO.class))).thenReturn(address);
+        when(houseRepository.findByAddressStreetAndAddressCityAndAddressZipCode(
+                house.getAddress().getStreet(), house.getAddress().getCity(), house.getAddress().getZipCode()
+        )).thenReturn(Optional.empty());
         when(houseMapper.updateEntityFromRequest(houseRequestDTO, house)).thenReturn(house);
-        when(houseRepository.save(house)).thenReturn(house);
+        when(houseRepository.saveAndFlush(house)).thenReturn(house);
+        when(houseMapper.toResponseDTO(house)).thenReturn(new HouseResponseDTO());
 
         HouseResponseDTO houseResponseDTO = houseService.updateHouse(houseId, houseRequestDTO);
 
         assertNotNull(houseResponseDTO);
-        verify(houseRepository).save(house);
+        verify(houseRepository).saveAndFlush(house);
     }
 
     @Test
     @DisplayName("Tentar atualizar casa com id que não existe")
     public void updateHouse_WithInvalidId_ShouldThrowException() {
         Long houseId = 9999L;
-        AddressRequestDTO addressRequestDTO = TestDataFactory.createAddressRequestDTO();
-        HouseRequestDTO houseRequestDTO = TestDataFactory.createHouseRequestDTO(addressRequestDTO);
+        AddressRequestDTO addressRequestDTO = Instancio.create(AddressRequestDTO.class);
+        HouseRequestDTO houseRequestDTO = Instancio.create(HouseRequestDTO.class);
 
-        House house = TestDataFactory.createHouseEntity();
-        house.setAddress(TestDataFactory.createAddressEntity());
+        House house = Instancio.create(House.class);
+        house.setAddress(Instancio.create(Address.class));
 
         when(houseRepository.findById(houseId)).thenReturn(Optional.empty());
 
@@ -220,7 +224,9 @@ class HouseServiceTest {
     public void deleteHouseById_WithValidId_ShouldDeleteHouseSuccessfully() {
         Long houseId = 1L;
 
-        when(houseRepository.findById(houseId)).thenReturn(Optional.of(TestDataFactory.createHouseEntity()));
+        when(houseRepository.findById(houseId)).thenReturn(
+                Optional.of(Instancio.create(House.class))
+        );
         when(houseRepository.existsById(houseId)).thenReturn(true);
 
         houseService.deleteHouse(houseId);
@@ -233,12 +239,10 @@ class HouseServiceTest {
     public void deleteHouseById_WithValidId_ShouldThrowException() {
         Long houseId = 9999L;
 
-        when(houseRepository.findById(houseId)).thenReturn(Optional.empty());
         when(houseRepository.existsById(houseId)).thenReturn(false);
 
-        houseService.deleteHouse(houseId);
-
-        assertThrows(ResourceNotFoundException.class,
+        assertThrows(
+                ResourceNotFoundException.class,
                 () -> houseService.deleteHouse(houseId)
         );
 
