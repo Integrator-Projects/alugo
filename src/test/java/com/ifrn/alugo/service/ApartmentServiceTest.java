@@ -21,8 +21,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class ApartmentServiceTest {
@@ -121,5 +120,38 @@ class ApartmentServiceTest {
 
         verify(apartmentMapper, never()).toResponseDTO(apartment1);
         verify(apartmentRepository.findById(invalidId));
+    }
+
+    @Test
+    @DisplayName("Atualizar apartamento com sucesso")
+    public void testUpdateApartment_ShouldUpdateApartmentSuccessfully() {
+        Apartment apartment1 = Instancio.create(Apartment.class);
+        ApartmentRequestDTO apartmentRequestDTO = Instancio.create(ApartmentRequestDTO.class);
+        ApartmentResponseDTO apartmentResponseDTO = Instancio.create(ApartmentResponseDTO.class);
+
+        when(apartmentRepository.findById(1L)).thenReturn(Optional.of(apartment1));
+        when(apartmentMapper.updateEntityFromRequest(apartmentRequestDTO, apartment1)).thenReturn(apartment1);
+        when(apartmentRepository.save(apartment1)).thenReturn(apartment1);
+        when(apartmentMapper.toResponseDTO(apartment1)).thenReturn(apartmentResponseDTO);
+
+        assertNotNull(apartmentResponseDTO);
+
+        verify(apartmentRepository).save(apartment1);
+    }
+
+    @Test
+    @DisplayName("Atualizar apartamento com id inválido")
+    public void testUpdateApartment_WithInvalidId_ShouldThrowException() {
+        ApartmentRequestDTO apartmentRequestDTO = Instancio.create(ApartmentRequestDTO.class);
+
+        when(apartmentRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(
+          ResourceNotFoundException.class,
+                () -> apartmentService.updateApartment(1L, apartmentRequestDTO)
+        );
+
+        verify(apartmentRepository, never()).findById(1L);
+        verify(apartmentRepository, never()).save(any(Apartment.class));
     }
 }
