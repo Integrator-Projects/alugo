@@ -171,8 +171,6 @@ class ApartmentServiceTest {
         long invalidId = 9999L;
         when(apartmentRepository.existsById(invalidId)).thenReturn(false);
 
-        apartmentService.deleteApartment(invalidId);
-
         assertThrows(
                 ResourceNotFoundException.class,
                 () -> apartmentService.deleteApartment(invalidId)
