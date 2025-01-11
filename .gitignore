@@ -6,6 +6,8 @@ target/
 
 .env
 
+htmlReport/
+
 ### STS ###
 .apt_generated
 .classpath
