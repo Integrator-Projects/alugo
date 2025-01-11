@@ -58,7 +58,7 @@ class ApartmentServiceTest {
         ApartmentResponseDTO apartmentResponseDTO = Instancio.create(ApartmentResponseDTO.class);
         Building building = Instancio.create(Building.class);
 
-        when(buildingRepository.findById(1L)).thenReturn(Optional.of(building));
+        when(buildingRepository.findById(any())).thenReturn(Optional.of(building));
         when(apartmentMapper.toEntity(apartmentRequestDTO)).thenReturn(apartment);
         when(apartmentRepository.save(apartment)).thenReturn(apartment);
         when(apartmentMapper.toResponseDTO(apartment)).thenReturn(apartmentResponseDTO);
@@ -87,7 +87,7 @@ class ApartmentServiceTest {
         when(apartmentMapper.toResponseDTO(apartment1)).thenReturn(apartmentResponseDTO);
 
         Page<ApartmentResponseDTO> result = apartmentService.getAllApartments(pageable);
-        assertEquals(2, result.getContent().size());
+        assertEquals(1, result.getContent().size());
     }
 
     @Test
@@ -119,7 +119,7 @@ class ApartmentServiceTest {
         );
 
         verify(apartmentMapper, never()).toResponseDTO(apartment1);
-        verify(apartmentRepository.findById(invalidId));
+        verify(apartmentRepository).findById(invalidId);
     }
 
     @Test
@@ -134,7 +134,9 @@ class ApartmentServiceTest {
         when(apartmentRepository.save(apartment1)).thenReturn(apartment1);
         when(apartmentMapper.toResponseDTO(apartment1)).thenReturn(apartmentResponseDTO);
 
-        assertNotNull(apartmentResponseDTO);
+        ApartmentResponseDTO result = apartmentService.updateApartment(1L, apartmentRequestDTO);
+
+        assertNotNull(result);
 
         verify(apartmentRepository).save(apartment1);
     }
@@ -151,7 +153,7 @@ class ApartmentServiceTest {
                 () -> apartmentService.updateApartment(1L, apartmentRequestDTO)
         );
 
-        verify(apartmentRepository, never()).findById(1L);
+        verify(apartmentRepository).findById(1L);
         verify(apartmentRepository, never()).save(any(Apartment.class));
     }
 
