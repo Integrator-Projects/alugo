@@ -1,6 +1,7 @@
 package com.ifrn.alugo.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,7 @@ public class Building {
     private Long id;
 
     @Column(name = "number_of_floors")
+    @PositiveOrZero(message = "Número de andares não pode ser negativo")
     private Integer numberOfFloors;
 
     @Column(name = "description")
