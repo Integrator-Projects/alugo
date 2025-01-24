@@ -1,4 +1,4 @@
-CREATE TABLE addresses (
+CREATE TABLE IF NOT EXISTS addresses (
     id SERIAL PRIMARY KEY,
     city VARCHAR(100) NOT NULL,
     state VARCHAR(100) NOT NULL,

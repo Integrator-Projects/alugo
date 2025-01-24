@@ -1,4 +1,4 @@
-CREATE TABLE apartments (
+CREATE TABLE IF NOT EXISTS apartments (
     id SERIAL PRIMARY KEY,
     number INTEGER NOT NULL,
     floor INTEGER NOT NULL,

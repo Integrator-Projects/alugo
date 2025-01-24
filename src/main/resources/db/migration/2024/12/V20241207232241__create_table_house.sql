@@ -1,4 +1,4 @@
-CREATE TABLE houses (
+CREATE TABLE IF NOT EXISTS houses (
     id SERIAL PRIMARY KEY,
     rental_price NUMERIC(10, 2) NOT NULL, -- Preço do aluguel com até duas casas decimais
     description TEXT NOT NULL,
@@ -8,5 +8,5 @@ CREATE TABLE houses (
     area_in_m2 NUMERIC(10, 2) NOT NULL,
     has_garage BOOLEAN NOT NULL,
     address_id BIGINT NOT NULL,
-    CONSTRAINT fk_address FOREIGN KEY (address_id) REFERENCES addresses (id) ON DELETE CASCADE
+    CONSTRAINT fk_address_houses FOREIGN KEY (address_id) REFERENCES addresses (id) ON DELETE CASCADE
 );
