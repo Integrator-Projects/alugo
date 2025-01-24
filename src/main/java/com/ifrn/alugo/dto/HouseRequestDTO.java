@@ -4,9 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.annotation.processing.Generated;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Generated("mapstruct")
 public class HouseRequestDTO {
     private Double rentalPrice;
     private String description;

@@ -4,9 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.annotation.processing.Generated;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Generated("mapstruct")
 public class AddressRequestDTO {
     private String city;
     private String state;

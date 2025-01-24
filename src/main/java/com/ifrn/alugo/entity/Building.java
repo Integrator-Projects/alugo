@@ -2,16 +2,17 @@ package com.ifrn.alugo.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.PositiveOrZero;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
-@Data
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@lombok.Getter
+@lombok.Setter
+@lombok.EqualsAndHashCode
+@lombok.ToString
 @Table(name = "buildings")
 public class Building {
     @Id

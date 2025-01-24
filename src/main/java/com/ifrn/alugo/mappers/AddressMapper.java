@@ -5,7 +5,10 @@ import com.ifrn.alugo.dto.AddressResponseDTO;
 import com.ifrn.alugo.entity.Address;
 import org.mapstruct.*;
 
+import javax.annotation.processing.Generated;
+
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Generated("mapstruct")
 public interface AddressMapper {
     @Mapping(target = "id", ignore = true)
     Address toEntity(AddressRequestDTO addressRequestDTO);
