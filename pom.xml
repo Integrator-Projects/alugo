@@ -113,6 +113,12 @@
             <artifactId>spring-boot-starter-validation</artifactId>
             <version>3.4.1</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope> <!-- Escopo de teste para evitar que seja usado em produção -->
+        </dependency>
     </dependencies>
 
     <build>
@@ -174,7 +180,58 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <argLine>@{argLine} -Xshare:off -javaagent:"${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar"</argLine>
+                    <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+                    <reportFormat>html</reportFormat>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.12</version>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal> <!-- Ativa o agente do JaCoCo para coleta de dados -->
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id> <!-- Adicionamos um id único -->
+                        <goals>
+                            <goal>report</goal> <!-- Gera o relatório após os testes -->
+                        </goals>
+                        <phase>verify</phase> <!-- Gera o relatório na fase de verificação -->
+                        <configuration>
+                            <excludes>
+                                <exclude>**/mappers/**</exclude>
+                                <exclude>**/dto/**</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Plugin para executar a abertura automática do relatório -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <exec executable="xdg-open">
+                                    <arg value="${project.build.directory}/site/jacoco/index.html"/>
+                                </exec>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
