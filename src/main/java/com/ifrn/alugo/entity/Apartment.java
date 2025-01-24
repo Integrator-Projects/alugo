@@ -4,14 +4,15 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@lombok.Getter
+@lombok.Setter
+@lombok.EqualsAndHashCode
+@lombok.ToString
 @Table(name = "apartments")
 public class Apartment {
     @Id

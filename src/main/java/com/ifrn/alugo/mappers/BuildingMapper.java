@@ -5,7 +5,10 @@ import com.ifrn.alugo.dto.BuildingResponseDTO;
 import com.ifrn.alugo.entity.Building;
 import org.mapstruct.*;
 
+import javax.annotation.processing.Generated;
+
 @Mapper(componentModel = "spring", uses = AddressMapper.class)
+@Generated("mapstruct")
 public interface BuildingMapper {
 
     @Mapping(target = "id", ignore = true)

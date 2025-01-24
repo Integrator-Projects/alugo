@@ -7,7 +7,10 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
+import javax.annotation.processing.Generated;
+
 @Mapper(componentModel = "spring", uses = BuildingMapper.class)
+@Generated("mapstruct")
 public interface ApartmentMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "building.id", source = "buildingId")

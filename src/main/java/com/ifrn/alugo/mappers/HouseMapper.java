@@ -7,7 +7,10 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
+import javax.annotation.processing.Generated;
+
 @Mapper(componentModel = "spring", uses = AddressMapper.class)
+@Generated("mapstruct")
 public interface HouseMapper {
     @Mapping(target = "id", ignore = true)
     House toEntity(HouseRequestDTO houseRequestDTO);
