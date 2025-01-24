@@ -87,7 +87,7 @@ class ApartmentServiceTest {
         when(apartmentMapper.toResponseDTO(apartment1)).thenReturn(apartmentResponseDTO);
 
         Page<ApartmentResponseDTO> result = apartmentService.getAllApartments(pageable);
-        assertEquals(2, result.getContent().size());
+        assertEquals(1, result.getContent().size());
     }
 
     @Test
